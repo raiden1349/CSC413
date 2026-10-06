@@ -33,25 +33,29 @@ public class Pawn extends Piece {
     public List<Move> pseudoLegalMoves(Board board, Position from) {
         List<Move> list = new ArrayList<>();
 
+        int direction = (color() == Color.WHITE) ? 1 : -1;
+        int startRank = (color() == Color.WHITE) ? 1 : 6;
+        int promotionRank = (color() == Color.WHITE) ? 7 : 0;
+
         /*creates a Position for the first move for pawn; two ranks */
-        Position possibleFirstMove = from.offsetOrNull(0, 2);
+        Position possibleFirstMove = from.offsetOrNull(0, 2 * direction);
 
         /*creates a Position for the average pawn move; one rank */
-        Position possibleMove = from.offsetOrNull(0, 1);
+        Position possibleMove = from.offsetOrNull(0, direction);
 
         /* creates diagonal Position to check if the pawn can capture a piece */
-        Position diagonalCapture = from.offsetOrNull(1, 1);
-        Position diagonalCaptureB = from.offsetOrNull(-1, 1);
+        /*Position diagonalCaptureB = from.offsetOrNull(-1, 1);
+        Position diagonalCapureB Black = from.offsetOrNull(1,-1);
 
         /* determines if the pawn hasn't moved (i.e, if the pawn is at rank 2 or 7), then add possibleFirstMove */
 
-        if (from.rank() == 1 && board.pieceAt(possibleFirstMove) == null && board.pieceAt(possibleMove) == null){
+        if (from.rank() == startRank && board.pieceAt(possibleFirstMove) == null && board.pieceAt(possibleMove) == null){
             list.add(Move.quiet(from, possibleFirstMove, this));
         }
 
         /* determines if the pawn is one rank away from promotion. If so, add Move.promotion. if not, just use move.quiet */
 
-        if (possibleMove.rank()== 7 && board.pieceAt(possibleMove) == null){
+        if (possibleMove.rank()== promotionRank && board.pieceAt(possibleMove) == null){
             for (PieceType PROMOTION_CHOICES1 : PROMOTION_CHOICES) {
                 list.add(Move.promotion(from, possibleMove, this, null, PROMOTION_CHOICES1));
             }
@@ -62,7 +66,17 @@ public class Pawn extends Piece {
             }
         }
 
-        if (attacks(board, from, diagonalCapture)){
+        for (int captureOffset : new int[] {-1,1}){
+            Position diagonalCapture = from.offsetOrNull(captureOffset, direction);
+            if (attacks(board, from, diagonalCapture)){
+                if (board.pieceAt(diagonalCapture) != null && board.pieceAt(diagonalCapture).color() != this.color()){
+                    list.add(Move.capture(from, diagonalCapture, this, board.pieceAt(diagonalCapture)));
+            }
+            
+        }
+        }
+
+        /*if (attacks(board, from, diagonalCapture)){
             if (board.pieceAt(diagonalCapture) != null && board.pieceAt(diagonalCapture).color() != this.color()){
                 list.add(Move.capture(from, diagonalCapture, this, board.pieceAt(diagonalCapture)));
             }
@@ -70,12 +84,12 @@ public class Pawn extends Piece {
         }
         
 
-        if (attacks(board, from, diagonalCaptureB))
-        {
-            if (board.pieceAt(diagonalCaptureB) != null && board.pieceAt(diagonalCaptureB).color() != this.color()){
-                list.add(Move.capture(from, diagonalCaptureB, this, board.pieceAt(diagonalCaptureB)));
-            }
-        }
+            if (attacks(board, from, diagonalCaptureB))
+            {
+                if (board.pieceAt(diagonalCaptureB) != null && board.pieceAt(diagonalCaptureB).color() != this.color()){
+                    list.add(Move.capture(from, diagonalCaptureB, this, board.pieceAt(diagonalCaptureB)));
+                }
+            }*/
         return list;
     }
 
@@ -93,9 +107,11 @@ public class Pawn extends Piece {
 
     @Override
     public boolean attacks(Board board, Position from, Position target) {
-        return !(target.file()-from.file() == 0 && target.rank() - from.rank() == 1);
+        if (target !=null){
+            return !(target.file()-from.file() == 0 && target.rank() - from.rank() == 1);
+        }
+        return false;
 
         
     }
-    /*Math.abs(target.file()-from.file()) == 1*/
 }
