@@ -9,12 +9,9 @@ public class Board {
         return squares[position.file()][position.rank()];}
 
     public boolean isEmpty(Position position){
-        if (this.pieceAt(position)!=null)
-        {
-            return false;
-        }
-        return true;
+        return this.pieceAt(position)==null;
     }
+    
     public void place(Position position, Piece piece){
         squares[position.file()][position.rank()] = piece;
         
