@@ -1,6 +1,6 @@
 # Chess Engine Diagrams
 
-## Class Diagram
+## Class Diagram of Model
 
 ```mermaid
 classDiagram
@@ -75,7 +75,44 @@ classDiagram
     Board o-- Piece
 ```
 
-## Sequence Diagram
+## Class Diagram of Engine
+
+```mermaid
+classDiagram
+    class Game{
+        -Board board
+        -List~Move~ history
+        -Color sideToMove
+        +board() Board
+        +sideToMove() Color
+        +history() List~Move~
+        +legalMoves() List~Move~
+        +findLegalMove(String) Optional~Move~
+        +play(Move)
+        +undoLastMove() Optional~Move~
+
+    }
+
+    class MoveGenerator{
+        +legalMoves(Board, Color) List~Move~
+        pseudoLegalMoves(Board, Color) List~Move~$
+        +isInCheck(Board, Color) boolean$
+        +isAttacked(Board, Position, Color) boolean$
+    }
+
+    class Board{
+        +pieceAt(Position) Piece
+        +positionsOf(Color) List~Position~
+    }
+
+    Game ..> MoveGenerator
+    MoveGenerator ..> Board
+    Game *-- Board
+```
+
+
+
+## Sequence Diagram of Game.legalMoves
 
 ```mermaid
 sequenceDiagram
