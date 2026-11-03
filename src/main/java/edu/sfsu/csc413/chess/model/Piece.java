@@ -27,7 +27,8 @@ public abstract class Piece {
     public abstract List<Move> pseudoLegalMoves(Board board, Position from);
     
     public boolean attacks(Board board, Position from, Position target){
-        return board.pieceAt(target).color != this.color;
+        Piece targetPiece = board.pieceAt(target);
+        return targetPiece == null || targetPiece.color() != this.color;
     }
     
     protected List<Move> slidingMoves(Board board, Position from, int[][] directions){

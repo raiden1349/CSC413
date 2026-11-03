@@ -74,4 +74,15 @@ public class Board {
         this.squares[move.from().file()][move.from().rank()] = move.moved();
     }
 
+    /* Returns a Position object for where the king is on the board, based on the color. If there is no king, return a null object. */
+    public Position kingPosition(Color color){
+        List<Position> pieces = positionsOf(color);
+        for (Position piece : pieces){
+            if (Character.toUpperCase(pieceAt(piece).symbol()) == 'K'){
+                return piece;
+            }
+        }
+        return null;
+    }
+
 }

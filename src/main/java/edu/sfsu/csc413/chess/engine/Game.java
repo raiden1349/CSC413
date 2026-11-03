@@ -71,7 +71,7 @@ public class Game {
      * or its callers.
      */
     public List<Move> legalMoves() {
-        return MoveGenerator.pseudoLegalMoves(board, sideToMove);
+        return MoveGenerator.legalMoves(board, sideToMove);
     }
 
     /**

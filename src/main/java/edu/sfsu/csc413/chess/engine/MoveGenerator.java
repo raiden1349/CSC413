@@ -41,7 +41,18 @@ public final class MoveGenerator {
      * when it tightens.
      */
     public static List<Move> legalMoves(Board board, Color color) {
-        return pseudoLegalMoves(board, color);
+        List<Move> initialList = pseudoLegalMoves(board, color);
+        List<Move> newList = new ArrayList<>();
+        for (Move move : initialList){
+            board.apply(move);
+            boolean check = isInCheck(board, color);
+            board.undo(move);
+            if (!check){
+                newList.add(move);
+            }
+        }
+        return newList; 
+        /* return pseudoLegalMoves(board, color); */
         /*throw new UnsupportedOperationException("M4: implement MoveGenerator.legalMoves");*/
     }
 
@@ -63,6 +74,30 @@ public final class MoveGenerator {
             moves.addAll(board.pieceAt(from).pseudoLegalMoves(board, from));
         }
         return moves;
-        /*throw new UnsupportedOperationException("M4: implement MoveGenerator.pseudoLegalMoves");*/
+    }
+
+    /* Returns true if the the current position of the color given king is in check. */
+    public static boolean isInCheck(Board board, Color color){
+        if(board.kingPosition(color)!=null){
+            return isAttacked(board, board.kingPosition(color), color.opposite());
+        }
+        return false;
+    }
+
+    /* Returns true if a given color attacker attacks a Position object target.  */
+    
+    public static boolean isAttacked(Board board, Position target, Color attacker){
+        List<Position> colorPieces = board.positionsOf(attacker);
+        for (Position piece : colorPieces){
+                List<Move> pieceMoves = board.pieceAt(piece).pseudoLegalMoves(board, piece);
+                for (Move possibleMove : pieceMoves){
+                    if (possibleMove.to().equals(target)){
+                        if (possibleMove.moved().attacks(board, piece, target)){
+                        return true;
+                        }
+                    }
+            }
+        }
+        return false;
     }
 }
