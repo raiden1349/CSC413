@@ -102,7 +102,7 @@ public class Game {
      */
     public void play(Move move) {
         if(!legalMoves().contains(move)){
-            throw new IllegalArgumentException("Illegal move: "+ move);
+            throw new IllegalArgumentException("Not a legal move: "+ move);
         }
 
         board.apply(move);
@@ -127,4 +127,13 @@ public class Game {
         }
         return Optional.empty();
     }
+
+    public GameStatus status(){
+        return MoveGenerator.status(board, sideToMove);
+    }
+
+    public boolean isGameOver(){
+        return (status().isGameOver());
+    }
 }
+

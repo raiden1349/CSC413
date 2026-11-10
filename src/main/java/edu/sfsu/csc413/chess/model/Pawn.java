@@ -66,6 +66,7 @@ public class Pawn extends Piece {
             }
         }
 
+        /* Determines if a diagonal move is theoritically possible for a pawn to move there, whether or not there is an actual opponent piece there in the first place. */
         for (int captureOffset : new int[] {-1,1}){
             Position diagonalCapture = from.offsetOrNull(captureOffset, direction);
             if (attacks(board, from, diagonalCapture)){
@@ -106,12 +107,9 @@ public class Pawn extends Piece {
      */
 
     @Override
-    public boolean attacks(Board board, Position from, Position target) {
-        if (target !=null){
-            return !(target.file()-from.file() == 0 && target.rank() - from.rank() == 1);
-        }
-        return false;
-
-        
+public boolean attacks(Board board, Position from, Position target) {
+        if (target == null) return false;
+        return target.rank() - from.rank() == color().pawnDirection()
+                && Math.abs(target.file() - from.file()) == 1;
     }
 }

@@ -20,7 +20,7 @@ package edu.sfsu.csc413.chess.model;
  * @param captured    the piece removed by this move, or null for a quiet move
  * @param promotesTo  the type a pawn became, or null if this is not a promotion
  */
-public record Move(Position from, Position to, Piece moved, Piece captured, PieceType promotesTo) {
+    public record Move(Position from, Position to, Piece moved, Piece captured, PieceType promotesTo) {
 
     /**
      * A move to an empty square.

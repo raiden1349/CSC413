@@ -52,7 +52,7 @@ public final class MoveGenerator {
             }
         }
         return newList; 
-        /* return pseudoLegalMoves(board, color); */
+        /*return pseudoLegalMoves(board, color); */
         /*throw new UnsupportedOperationException("M4: implement MoveGenerator.legalMoves");*/
     }
 
@@ -89,15 +89,32 @@ public final class MoveGenerator {
     public static boolean isAttacked(Board board, Position target, Color attacker){
         List<Position> colorPieces = board.positionsOf(attacker);
         for (Position piece : colorPieces){
-                List<Move> pieceMoves = board.pieceAt(piece).pseudoLegalMoves(board, piece);
-                for (Move possibleMove : pieceMoves){
-                    if (possibleMove.to().equals(target)){
-                        if (possibleMove.moved().attacks(board, piece, target)){
-                        return true;
-                        }
-                    }
+            if (board.pieceAt(piece).attacks(board, piece, target))
+            {
+                return true;
             }
         }
         return false;
     }
+
+    public static GameStatus status(Board board, Color sideToMove){
+        if (isInCheck(board, sideToMove)){
+            if (legalMoves(board, sideToMove).isEmpty()){
+                return GameStatus.CHECKMATE;
+            }
+            else{
+                return GameStatus.CHECK;
+            }
+        }
+        else{
+            if (legalMoves(board, sideToMove).isEmpty()){
+                return GameStatus.STALEMATE;
+            }
+            else{
+                return GameStatus.IN_PROGRESS;
+            }
+        }
+        /*throw new UnsupportedOperationException("M6: Implement MoveGenerator.GameStatus()");*/
+    }
+
 }

@@ -1,6 +1,13 @@
 package edu.sfsu.csc413.chess.view;
 
+import java.util.List;
+import java.util.Optional;
+
 import edu.sfsu.csc413.chess.engine.Game;
+import edu.sfsu.csc413.chess.engine.GameStatus;
+import edu.sfsu.csc413.chess.model.Move;
+import edu.sfsu.csc413.chess.model.PieceType;
+
 
 /**
  * Connects the player's decisions to the game: carry out what was asked, then
@@ -35,7 +42,10 @@ public class GameController {
      * view with {@link BoardView#start}.
      */
     public void start() {
-        throw new UnsupportedOperationException("M6: implement GameController.start");
+        view.showMessage("Welcome to Chess! Let's Begin!");
+        view.render(game);
+        view.start(this);
+        /*throw new UnsupportedOperationException("M6: implement GameController.start");*/
     }
 
     /**
@@ -46,7 +56,22 @@ public class GameController {
      * {@code start}; an event-driven view never calls it.
      */
     public void runLoop() {
-        throw new UnsupportedOperationException("M6: implement GameController.runLoop");
+        while (!game.isGameOver()) {
+        PlayerAction action = view.nextAction(game);
+        if(action instanceof PlayerAction.Quit){
+            handle(action);
+            break;
+        }
+        handle(action);
+        }
+        if (game.status() == GameStatus.CHECKMATE){
+            view.showMessage("Checkmate. " + game.sideToMove().opposite() + " wins.");
+        }
+        else if (game.status() == GameStatus.STALEMATE){
+            view.showMessage("Stalemate. The game is a draw.");
+        }
+        view.close();
+        /*throw new UnsupportedOperationException("M6: implement GameController.runLoop");*/
     }
 
     /**
@@ -57,6 +82,46 @@ public class GameController {
      * each of the four actions does and what the player is told.
      */
     public void handle(PlayerAction action) {
-        throw new UnsupportedOperationException("M6: implement GameController.handle");
+        if (action instanceof PlayerAction.Undo){
+            if (game.undoLastMove().isEmpty()){
+                view.showMessage("Nothing to undo.");
+            }
+            else{
+                game.undoLastMove();
+            }
+            view.render(game);
+        }
+        else if (action instanceof PlayerAction.ShowMoves){
+            List<Move> moveList = game.legalMoves();
+            String moveListString = moveList.size() + " legal moves : ";
+            for (Move move : moveList){
+                moveListString += move.toString() + " ";
+            }
+            System.out.println(moveListString);
+            view.render(game);
+
+        }
+        else if (action instanceof PlayerAction.Quit){
+            view.showMessage("Goodbye.");
+
+        }
+        else if (action instanceof PlayerAction.Move move) {
+        Optional<Move> legalMove = game.findLegalMove(move.notation());
+        if (legalMove.isEmpty()){
+            if (move.notation().length()==4){
+                PieceType promotion = view.promotionChoice(game);
+                String appendedMove = move.notation()+ Character.toLowerCase(promotion.symbol());
+                game.findLegalMove(appendedMove).ifPresentOrElse(
+                moveFound -> { game.play(moveFound); view.render(game);},
+                () -> view.showMessage("Not a legal move: '" + move.notation()+"'"));
+            }
+        }
+        else{
+            game.findLegalMove(move.notation()).ifPresentOrElse(
+                moveFound -> { game.play(moveFound); view.render(game); },
+                () -> view.showMessage("Not a legal move: " + move.notation()));
+        }
+}
+        /*throw new UnsupportedOperationException("M6: implement GameController.handle");*/
     }
 }

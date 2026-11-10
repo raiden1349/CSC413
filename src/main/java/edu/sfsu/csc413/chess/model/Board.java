@@ -65,7 +65,29 @@ public class Board {
 
     public void apply(Move move){
         this.squares[move.from().file()][move.from().rank()] = null;
-        this.squares[move.to().file()][move.to().rank()] = move.moved();
+        if (move.promotesTo()!=null){
+            switch (move.promotesTo()){
+                case PieceType.QUEEN:
+                    Queen promotedQueen = new Queen(move.moved().color());
+                    this.squares[move.to().file()][move.to().rank()] = promotedQueen;
+                    break;
+                case PieceType.BISHOP:
+                    Bishop promotedBishop = new Bishop(move.moved().color());
+                    this.squares[move.to().file()][move.to().rank()] = promotedBishop;
+                    break;
+                case PieceType.ROOK:
+                    Rook promotedRook = new Rook(move.moved().color());
+                    this.squares[move.to().file()][move.to().rank()] = promotedRook;
+                    break;
+                case PieceType.KNIGHT:
+                    Knight promotedKnight = new Knight(move.moved().color());
+                    this.squares[move.to().file()][move.to().rank()] = promotedKnight;
+                    break;
+            }
+        }
+        else{
+            this.squares[move.to().file()][move.to().rank()] = move.moved();
+        }
         
     }
 

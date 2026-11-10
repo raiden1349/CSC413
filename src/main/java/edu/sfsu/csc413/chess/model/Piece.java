@@ -27,8 +27,13 @@ public abstract class Piece {
     public abstract List<Move> pseudoLegalMoves(Board board, Position from);
     
     public boolean attacks(Board board, Position from, Position target){
-        Piece targetPiece = board.pieceAt(target);
-        return targetPiece == null || targetPiece.color() != this.color;
+        if (target == null) return false;
+        for (Move move : pseudoLegalMoves(board, from)){
+            if (move.to().equals(target)){
+                return true;
+            }
+        }
+        return false;
     }
     
     protected List<Move> slidingMoves(Board board, Position from, int[][] directions){
@@ -41,7 +46,7 @@ public abstract class Piece {
                 }
                 else
                 {
-                    if (attacks(board, from, possibleMove)){
+                    if (board.pieceAt(possibleMove).color()!= this.color()){
                         list.add(Move.capture(from, possibleMove, this, board.pieceAt(possibleMove)));
                     }
                     break;
